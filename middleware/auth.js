@@ -2,14 +2,17 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
 const protect = async (req, res, next) => {
-  const token = req.headers.authorization;
-  if (!token) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ success: false, message: "No token, not authorized" });
   }
 
+  const token = authHeader.split(" ")[1];
+
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // ✅ use verify, NOT decode
-    const user = await User.findById(decoded).select("-password");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
     if (!user) {
       return res.status(401).json({ success: false, message: "User not found" });
     }
@@ -22,6 +25,32 @@ const protect = async (req, res, next) => {
 };
 
 export default protect;
+
+
+// import jwt from 'jsonwebtoken';
+// import User from '../models/User.js';
+
+// const protect = async (req, res, next) => {
+//   const token = req.headers.authorization;
+//   if (!token) {
+//     return res.status(401).json({ success: false, message: "No token, not authorized" });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET); // ✅ use verify, NOT decode
+//     const user = await User.findById(decoded).select("-password");
+//     if (!user) {
+//       return res.status(401).json({ success: false, message: "User not found" });
+//     }
+//     req.user = user;
+//     next();
+//   } catch (error) {
+//     console.error("Protect middleware error:", error.message);
+//     return res.status(401).json({ success: false, message: "Token is invalid or expired" });
+//   }
+// };
+
+// export default protect;
 
 
 // import jwt from 'jsonwebtoken';
