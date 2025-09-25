@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Routes
 
-app.get('/',(req, res)=>res.send("server is running..."))
+app.get('/',(req, res)=>res.send("server is running...fine"))
 app.use('/api/user', userRouter)
 app.use('/api/owner',ownerRouter)
 app.use('/api/booking', bookingRouter)
